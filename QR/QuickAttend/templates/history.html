@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Attendance History - QuickAttend{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>View History</h2>
+
+  {% if classes %}
+  <form method="GET">
+    <div class="row">
+      <div>
+        <label for="class_name">Class</label>
+        <select name="class_name" id="class_name">
+          {% for c in classes %}
+          <option value="{{ c }}" {{ 'selected' if c == selected_class }}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="month">Month</label>
+        <input type="month" name="month" id="month" value="{{ month }}" required>
+      </div>
+    </div>
+    <div class="btn-row" style="justify-content:flex-start">
+      <button class="btn" type="submit">Show report</button>
+      <a class="btn light" href="{{ url_for('history', class_name=selected_class, month=this_month) }}">Current month</a>
+      <a class="btn light" href="{{ url_for('history', class_name=selected_class, month=last_month) }}">Last month</a>
+    </div>
+  </form>
+  {% else %}
+  <p class="empty">No sessions created yet. Create a session first, then come back here.</p>
+  {% endif %}
+</div>
+
+{% if classes %}
+<div class="page-head">
+  <h2 style="margin:0">{{ selected_class }} &ndash; {{ month|month_label }}</h2>
+  {% if sessions %}
+  <a class="btn green small" href="{{ url_for('download_report', class_name=selected_class, month=month) }}">Download report (CSV)</a>
+  {% endif %}
+</div>
+
+{% if sessions %}
+<div class="stats">
+  <div class="stat"><div class="num">{{ sessions|length }}</div><div class="label">Lectures this month</div></div>
+  <div class="stat"><div class="num">{{ rows|length }}</div><div class="label">Students</div></div>
+  <div class="stat"><div class="num">{{ average }}%</div><div class="label">Average attendance</div></div>
+</div>
+
+<div class="card">
+  <h2>Student report</h2>
+  <div class="table-wrap"><table>
+    <tr><th>Roll No</th><th>Name</th><th>Present</th><th>Total</th><th>%</th></tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r['roll_no'] }}</td><td>{{ r['name'] }}</td>
+      <td>{{ r['present'] }}</td><td>{{ r['total'] }}</td>
+      <td><span class="badge {{ 'green' if r['percent'] >= 75 else 'red' }}">{{ r['percent'] }}%</span></td>
+    </tr>
+    {% endfor %}
+  </table></div>
+  {% if not rows %}<p class="empty">No students found for this class.</p>{% endif %}
+</div>
+
+<div class="card">
+  <h2>Sessions held</h2>
+  <div class="table-wrap"><table>
+    <tr><th>Date</th><th>Subject</th><th>Time</th><th></th></tr>
+    {% for s in sessions %}
+    <tr>
+      <td>{{ s['date']|dmy }}</td><td>{{ s['subject'] }}</td>
+      <td>{{ s['start_time']|t12 }} - {{ s['end_time']|t12 }}</td>
+      <td><a href="{{ url_for('session_attendance', session_id=s['id']) }}">View attendance</a></td>
+    </tr>
+    {% endfor %}
+  </table></div>
+</div>
+{% else %}
+<div class="card"><p class="empty">No sessions found for {{ selected_class }} in {{ month|month_label }}.</p></div>
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block bottomnav %}{% with active='history' %}{% include '_teacher_nav.html' %}{% endwith %}{% endblock %}

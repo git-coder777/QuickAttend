@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Sign up - QuickAttend{% endblock %}
+{% block bodyclass %}auth-page{% endblock %}
+{% block topbar %}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="logo">
+      <span class="mark">QA</span>
+      <h1>Create account</h1>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}" style="margin-top:16px">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="tabs">
+      <button type="button" class="tab" id="tab-student">Student</button>
+      <button type="button" class="tab" id="tab-teacher">Teacher</button>
+    </div>
+
+    <form method="POST" action="{{ url_for('signup') }}">
+      <input type="hidden" name="role" id="role" value="{{ role }}">
+
+      <label for="name">Full name</label>
+      <input type="text" name="name" id="name" required>
+
+      <div id="student-fields">
+        <label for="student_id">Student ID</label>
+        <input type="text" name="student_id" id="student_id">
+      </div>
+
+      <div id="teacher-fields">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email">
+      </div>
+
+      <label for="password">Password (min 6 characters)</label>
+      <input type="password" name="password" id="password" minlength="6" required>
+
+      <button class="btn full" type="submit">Sign up</button>
+    </form>
+
+    <p class="auth-foot">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+  </div>
+</div>
+
+<script>
+  const roleInput = document.getElementById("role");
+  const tabS = document.getElementById("tab-student");
+  const tabT = document.getElementById("tab-teacher");
+  const sBox = document.getElementById("student-fields");
+  const tBox = document.getElementById("teacher-fields");
+
+  function setRole(role) {
+    roleInput.value = role;
+    tabS.classList.toggle("active", role === "student");
+    tabT.classList.toggle("active", role === "teacher");
+    sBox.style.display = role === "student" ? "block" : "none";
+    tBox.style.display = role === "teacher" ? "block" : "none";
+    document.getElementById("student_id").required = role === "student";
+    document.getElementById("email").required = role === "teacher";
+  }
+  tabS.onclick = () => setRole("student");
+  tabT.onclick = () => setRole("teacher");
+  setRole(roleInput.value);
+</script>
+{% endblock %}

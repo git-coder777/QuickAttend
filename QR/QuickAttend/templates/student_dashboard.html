@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard - QuickAttend{% endblock %}
+{% block content %}
+<div class="card welcome">
+  <h1>Welcome {{ st['name'] }}!!</h1>
+  <p>Scan the QR code shown by your teacher to mark attendance.</p>
+</div>
+
+{% if not st['class_name'] or not st['roll_no'] %}
+  <div class="flash error">Your profile is incomplete. <a href="{{ url_for('student_profile') }}">Add your class, division and roll number</a> before scanning.</div>
+{% endif %}
+
+<div class="stats">
+  <div class="stat"><div class="num">{{ present }}</div><div class="label">Lectures attended</div></div>
+  <div class="stat"><div class="num">{{ total }}</div><div class="label">Total lectures held</div></div>
+  <div class="stat"><div class="num">{{ percent }}%</div><div class="label">Overall attendance</div></div>
+</div>
+{% endblock %}
+
+{% block bottomnav %}{% with active='home' %}{% include '_student_nav.html' %}{% endwith %}{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Login - QuickAttend{% endblock %}
+{% block bodyclass %}auth-page{% endblock %}
+{% block topbar %}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="logo">
+      <span class="mark">QA</span>
+      <h1>QuickAttend</h1>
+      <p class="muted">QR based attendance system</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}" style="margin-top:16px">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="tabs">
+      <button type="button" class="tab" id="tab-student">Student</button>
+      <button type="button" class="tab" id="tab-teacher">Teacher</button>
+    </div>
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <input type="hidden" name="role" id="role" value="{{ role }}">
+
+      <label for="identifier" id="id-label">Student ID</label>
+      <input type="text" name="identifier" id="identifier" required>
+
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required>
+
+      <button class="btn full" type="submit">Login</button>
+    </form>
+
+    <p class="auth-foot">Don't have an account?
+      <a href="#" id="signup-link">Sign up</a></p>
+  </div>
+</div>
+
+<script>
+  const roleInput = document.getElementById("role");
+  const label = document.getElementById("id-label");
+  const field = document.getElementById("identifier");
+  const tabS = document.getElementById("tab-student");
+  const tabT = document.getElementById("tab-teacher");
+  const signup = document.getElementById("signup-link");
+
+  function setRole(role) {
+    roleInput.value = role;
+    tabS.classList.toggle("active", role === "student");
+    tabT.classList.toggle("active", role === "teacher");
+    if (role === "student") {
+      label.textContent = "Student ID";
+      field.type = "text";
+    } else {
+      label.textContent = "Email";
+      field.type = "email";
+    }
+    signup.href = "/signup?role=" + role;
+  }
+  tabS.onclick = () => setRole("student");
+  tabT.onclick = () => setRole("teacher");
+  setRole(roleInput.value);
+</script>
+{% endblock %}

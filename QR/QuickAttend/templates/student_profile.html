@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Profile - QuickAttend{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>My Profile</h2>
+  <p class="muted">Student ID: {{ st['student_id'] }}</p>
+  <form method="POST">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" value="{{ st['name'] }}" required>
+
+    <div class="row">
+      <div>
+        <label for="class_name">Class</label>
+        <input type="text" name="class_name" id="class_name" value="{{ st['class_name'] }}" placeholder="e.g. TYCS" required>
+      </div>
+      <div>
+        <label for="division">Division</label>
+        <input type="text" name="division" id="division" value="{{ st['division'] }}" placeholder="e.g. A" required>
+      </div>
+    </div>
+
+    <label for="roll_no">Roll No</label>
+    <input type="text" name="roll_no" id="roll_no" value="{{ st['roll_no'] }}" placeholder="e.g. 25" required>
+
+    <button class="btn full" type="submit">Save profile</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Subject-wise attendance</h2>
+  {% if subjects %}
+  <div class="table-wrap"><table>
+    <tr><th>Subject</th><th>Attended</th><th>Total</th><th>%</th></tr>
+    {% for s in subjects %}
+    {% set pct = (s['present'] * 100 / s['total'])|round|int %}
+    <tr>
+      <td>{{ s['subject'] }}</td><td>{{ s['present'] }}</td><td>{{ s['total'] }}</td>
+      <td><span class="badge {{ 'green' if pct >= 75 else 'red' }}">{{ pct }}%</span></td>
+    </tr>
+    {% endfor %}
+  </table></div>
+  {% else %}
+  <p class="empty">No lectures yet for your class.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>History of Attendance</h2>
+  {% if history %}
+  <div class="table-wrap"><table>
+    <tr><th>Subject</th><th>Date</th><th>Time</th><th>Marked at</th></tr>
+    {% for h in history %}
+    <tr>
+      <td>{{ h['subject'] }}</td>
+      <td>{{ h['date']|dmy }}</td>
+      <td>{{ h['start_time']|t12 }} - {{ h['end_time']|t12 }}</td>
+      <td>{{ h['marked_at'] }}</td>
+    </tr>
+    {% endfor %}
+  </table></div>
+  {% else %}
+  <p class="empty">You haven't marked any attendance yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block bottomnav %}{% with active='profile' %}{% include '_student_nav.html' %}{% endwith %}{% endblock %}

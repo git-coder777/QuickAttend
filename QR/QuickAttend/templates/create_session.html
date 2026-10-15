@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Create Session - QuickAttend{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Create Session</h2>
+  <form method="POST">
+    <div class="row">
+      <div>
+        <label for="class_name">Class</label>
+        <input type="text" name="class_name" id="class_name" placeholder="e.g. TYCS" required>
+      </div>
+      <div>
+        <label for="subject">Subject</label>
+        <input type="text" name="subject" id="subject" placeholder="e.g. Artificial Intelligence" required>
+      </div>
+    </div>
+
+    <label for="date">Date</label>
+    <input type="date" name="date" id="date" value="{{ today }}" required>
+
+    <div class="row">
+      <div>
+        <label for="start_time">Start time</label>
+        <input type="time" name="start_time" id="start_time" value="10:00" required>
+      </div>
+      <div>
+        <label for="end_time">End time</label>
+        <input type="time" name="end_time" id="end_time" value="11:00" required>
+      </div>
+    </div>
+
+    <label for="qr_seconds">QR code changes every</label>
+    <select name="qr_seconds" id="qr_seconds">
+      <option value="15" selected>15 seconds</option>
+      <option value="30">30 seconds</option>
+      <option value="60">60 seconds</option>
+    </select>
+    <p class="muted" style="margin-top:6px">The QR keeps changing so students cannot share a photo of it.</p>
+
+    <button class="btn full" type="submit">Generate QR code</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block bottomnav %}{% with active='create' %}{% include '_teacher_nav.html' %}{% endwith %}{% endblock %}

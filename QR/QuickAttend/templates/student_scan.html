@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Scan QR - QuickAttend{% endblock %}
+{% block content %}
+
+<div class="card" id="scan-card">
+  <h2>Scan QR</h2>
+  <div id="reader"></div>
+  <p class="muted" id="cam-msg" style="text-align:center; margin-top:10px">Point your camera at the QR code on the teacher's screen.</p>
+  <button class="btn light full hidden" id="retry-btn" type="button">Scan again</button>
+
+  <label for="manual-code" style="margin-top:22px">Camera not working? Type the 6 digit code</label>
+  <div style="display:flex; gap:10px">
+    <input type="text" id="manual-code" inputmode="numeric" maxlength="6" placeholder="123456">
+    <button class="btn" type="button" id="manual-btn">Go</button>
+  </div>
+</div>
+
+<div class="flash error hidden" id="error-box"></div>
+
+<!-- shown after a successful scan -->
+<div class="card hidden" id="details-card">
+  <h2>Session details</h2>
+  <div class="detail-line"><span>Subject</span><strong id="d-subject"></strong></div>
+  <div class="detail-line"><span>Class</span><strong id="d-class"></strong></div>
+  <div class="detail-line"><span>Teacher</span><strong id="d-teacher"></strong></div>
+  <div class="detail-line"><span>Time</span><strong id="d-time"></strong></div>
+  <div class="detail-line"><span>Date</span><strong id="d-date"></strong></div>
+  <button class="btn green full" id="present-btn" type="button">Present</button>
+</div>
+
+<div class="result-ok hidden" id="success-box">
+  Attendance marked successfully!
+  <div style="margin-top:10px"><a class="btn small" href="{{ url_for('student_dashboard') }}">Back to home</a></div>
+</div>
+{% endblock %}
+
+{% block bottomnav %}{% with active='scan' %}{% include '_student_nav.html' %}{% endwith %}{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{{ url_for('static', filename='js/scan.js') }}"></script>
+{% endblock %}

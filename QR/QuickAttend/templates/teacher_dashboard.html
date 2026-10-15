@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard - QuickAttend{% endblock %}
+{% block content %}
+<div class="card welcome">
+  <h1>Welcome {{ session['name'] }}</h1>
+  <p>Create a session and let students scan the QR code.</p>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num">{{ total_sessions }}</div><div class="label">Sessions created</div></div>
+  <div class="stat"><div class="num">{{ today_sessions }}</div><div class="label">Sessions today</div></div>
+</div>
+
+<div class="card">
+  <h2>Recent sessions</h2>
+  {% if recent %}
+  <div class="table-wrap"><table>
+    <tr><th>Class</th><th>Subject</th><th>Date</th><th>Present</th><th>Status</th><th></th></tr>
+    {% for s in recent %}
+    <tr>
+      <td>{{ s['class_name'] }}</td>
+      <td>{{ s['subject'] }}</td>
+      <td>{{ s['date']|dmy }}</td>
+      <td>{{ s['present_count'] }}</td>
+      <td>{% if s['is_active'] %}<span class="badge green">Live</span>{% else %}<span class="badge grey">Ended</span>{% endif %}</td>
+      <td><a href="{{ url_for('session_qr' if s['is_active'] else 'session_attendance', session_id=s['id']) }}">Open</a></td>
+    </tr>
+    {% endfor %}
+  </table></div>
+  {% else %}
+  <p class="empty">No sessions yet. Tap "Create Session" below to start.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block bottomnav %}{% with active='home' %}{% include '_teacher_nav.html' %}{% endwith %}{% endblock %}

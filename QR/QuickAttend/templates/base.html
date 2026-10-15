@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}QuickAttend{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+
+{% block topbar %}
+<header class="topbar">
+  <span class="brand">QuickAttend</span>
+  <div class="right">
+    <span>{{ session.get('name') }}</span>
+    <a href="{{ url_for('logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %}
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+{% block bottomnav %}{% endblock %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

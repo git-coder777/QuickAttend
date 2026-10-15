@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Session QR - QuickAttend{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>{{ s['subject'] }}</h2>
+  <div class="detail-line"><span>Class</span><strong>{{ s['class_name'] }}</strong></div>
+  <div class="detail-line"><span>Date</span><strong>{{ s['date']|dmy }}</strong></div>
+  <div class="detail-line"><span>Time</span><strong>{{ s['start_time']|t12 }} - {{ s['end_time']|t12 }}</strong></div>
+</div>
+
+{% if s['is_active'] %}
+<div class="card qr-box" id="qr-card" data-id="{{ s['id'] }}" data-seconds="{{ s['qr_seconds'] }}">
+  <img id="qr-img" alt="QR code" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+  <div class="code-text" id="code-text">------</div>
+  <div class="timer-bar"><div id="timer-fill"></div></div>
+  <p class="muted">New QR in <span id="timer-text">{{ s['qr_seconds'] }}</span> seconds</p>
+  <p style="margin-top:12px"><strong id="present-count">{{ count }}</strong> student(s) marked present</p>
+
+  <div class="btn-row">
+    <a class="btn" href="{{ url_for('session_attendance', session_id=s['id']) }}">View attendance</a>
+    <form method="POST" action="{{ url_for('stop_session', session_id=s['id']) }}"
+          onsubmit="return confirm('End this session? Students will not be able to mark attendance anymore.')">
+      <button class="btn danger" type="submit">End session</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <p>This session has ended.</p>
+  <div class="btn-row"><a class="btn" href="{{ url_for('session_attendance', session_id=s['id']) }}">View attendance</a></div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block bottomnav %}{% with active='create' %}{% include '_teacher_nav.html' %}{% endwith %}{% endblock %}
+
+{% block scripts %}
+{% if s['is_active'] %}
+<script>
+  const card = document.getElementById("qr-card");
+  const sessionId = card.dataset.id;
+  const totalSeconds = parseInt(card.dataset.seconds);
+  let remaining = totalSeconds;
+  let ticks = 0;
+
+  async function newQR() {
+    const response = await fetch("/teacher/session/" + sessionId + "/refresh", { method: "POST" });
+    const data = await response.json();
+    if (!data.ok) { location.reload(); return; }       // session was ended
+    document.getElementById("qr-img").src = data.image;
+    document.getElementById("code-text").textContent = data.code;
+    remaining = totalSeconds;
+  }
+
+  async function updateCount() {
+    const response = await fetch("/teacher/session/" + sessionId + "/count");
+    const data = await response.json();
+    document.getElementById("present-count").textContent = data.count;
+  }
+
+  function tick() {
+    remaining -= 1;
+    ticks += 1;
+    if (remaining <= 0) newQR();
+    document.getElementById("timer-text").textContent = Math.max(remaining, 0);
+    document.getElementById("timer-fill").style.width = (Math.max(remaining, 0) / totalSeconds * 100) + "%";
+    if (ticks % 5 === 0) updateCount();                 // refresh count every 5 seconds
+  }
+
+  newQR();
+  setInterval(tick, 1000);
+</script>
+{% endif %}
+{% endblock %}

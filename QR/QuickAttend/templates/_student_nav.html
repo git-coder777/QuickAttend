@@ -1,0 +1,8 @@
+<nav class="bottom-nav">
+  <a href="{{ url_for('student_dashboard') }}" class="{{ 'active' if active == 'home' }}">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a>
+  <a href="{{ url_for('student_scan') }}" class="{{ 'active' if active == 'scan' }}">
+    <svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M4 12h16"/></svg>Scan</a>
+  <a href="{{ url_for('student_profile') }}" class="{{ 'active' if active == 'profile' }}">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profile</a>
+</nav>
